@@ -1,0 +1,10 @@
+[package]
+name = "carpo"
+version = "0.1.0"
+authors = ["Larry Hsiao <larryhsiao@larryhsiao.com>"]
+edition = "2018"
+
+[dependencies]
+structopt = "0.2.10"
+confy = "0.3.1"
+serde = { version = "1.0", features = ["derive"] }
