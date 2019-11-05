@@ -1,8 +1,14 @@
 extern crate confy;
 
+mod arch;
+mod files;
+
 use serde::{Serialize, Deserialize};
 use structopt::StructOpt;
 use std::path::PathBuf;
+
+use crate::files::AllFiles;
+use crate::arch::Source;
 
 #[derive(StructOpt)]
 struct Cli {
@@ -19,16 +25,14 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            root: PathBuf::from("~/carpo")
+            root: PathBuf::from(
+                format!(
+                    "{}{}", dirs::home_dir().unwrap().to_str().unwrap(), "/carpo_test/"
+                )
+            )
         }
     }
 }
-
-mod arch;
-mod files;
-
-use crate::files::AllFiles;
-use crate::arch::Source;
 
 /// Main function of Carpo
 fn main() {
@@ -42,7 +46,7 @@ fn main() {
         "setup" => unimplemented!(),
         "list" => {
             AllFiles {
-                root: dirs::home_dir().unwrap()
+                root: cfg.root
             }.value();
         }
         "serve" => unimplemented!(),
