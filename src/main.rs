@@ -3,12 +3,11 @@ extern crate confy;
 use serde::{Serialize, Deserialize};
 use structopt::StructOpt;
 use std::path::PathBuf;
-use std::process;
 
 #[derive(StructOpt)]
 struct Cli {
     command: String,
-    arg: String,
+    arg: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, StructOpt)]
@@ -25,6 +24,13 @@ impl Default for Config {
     }
 }
 
+mod arch;
+mod files;
+
+use crate::files::AllFiles;
+use crate::arch::Source;
+
+/// Main function of Carpo
 fn main() {
     let cfg: Config = confy::load("carpo.config").unwrap();
     #[cfg(debug_assertions)]
@@ -33,8 +39,13 @@ fn main() {
     let args = Cli::from_args();
     let command = &args.command;
     match command.as_ref() {
-        "setup" => eprintln!("setup: in construction"),
-        "list" => eprintln!("list: function still in construction"),
+        "setup" => unimplemented!(),
+        "list" => {
+            AllFiles {
+                root: dirs::home_dir().unwrap()
+            }.value();
+        }
+        "serve" => unimplemented!(),
         _ => panic!("Unrecognized command: {}", command)
     }
 }
