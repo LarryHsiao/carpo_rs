@@ -13,7 +13,7 @@ pub struct File {
     pub name: String
 }
 
-impl Source<Result<HashMap<String, File>, Box<dyn Error>>> for AllFiles {
+impl Source<HashMap<String, File>> for AllFiles {
     fn value(&self) -> Result<HashMap<String, File>, Box<dyn Error>> {
         let mut result: HashMap<String, File> = HashMap::new();
         if self.root.is_dir() {
