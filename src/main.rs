@@ -1,12 +1,14 @@
 extern crate confy;
 
-mod arch;
-mod files;
-
 use serde::{Deserialize, Serialize};
 use structopt::StructOpt;
 use std::path::PathBuf;
 
+mod arch;
+mod files;
+mod tags;
+
+use crate::tags::AllTags;
 use crate::files::AllFiles;
 use crate::arch::Source;
 
@@ -55,14 +57,21 @@ fn main() {
                 ).unwrap()
             }
         }
-        "list" => {
+        "files" => {
             for (_name, file) in {
                 AllFiles { root: cfg.root }.value().unwrap()
-            } {
-                println!("{}", file.name)
-            }
+            } { println!("{}", file.name) }
         }
-        "serve" => unimplemented!(),
+        "tags" => {
+            for (_name, tag) in {
+                AllTags {}.value().unwrap()
+            } { println!("{}", tag.name) }
+        }
+        "search" => {
+            args.arg.expect("No keyword provided.");
+            unimplemented!(" @todo #3 Search function.")
+        }
+        "serve" => unimplemented!(" @todo #1 http server"),
         _ => panic!("Unrecognized command: {}", command)
     }
 }
