@@ -1,24 +1,35 @@
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
-use std::fs::read_dir;
 use std::fs;
+use std::path::PathBuf;
+
 use crate::arch::Source;
+use std::error::Error;
 
 pub struct AllFiles {
     pub root: PathBuf
 }
 
-pub struct File {}
+pub struct File {
+    pub name: String
+}
 
-impl Source<HashMap<String, File>> for AllFiles {
-    fn value(&self) -> HashMap<String, File> {
-        let result = HashMap::new();
+impl Source<Result<HashMap<String, File>, Box<dyn Error>>> for AllFiles {
+    fn value(&self) -> Result<HashMap<String, File>, Box<dyn Error>> {
+        let mut result: HashMap<String, File> = HashMap::new();
         if self.root.is_dir() {
-            for entry in fs::read_dir(&self.root).unwrap() {
-                let entry2 = entry.unwrap();
-                println!("{}", entry2.path().to_str().unwrap())
+            for entry in fs::read_dir(&self.root)? {
+                let file_name = String::from(entry?.path()
+                    .to_str()
+                    .unwrap_or_else(|| "")
+                ).replace(
+                    &self.root.to_str().unwrap_or_else(|| ""),
+                    "",
+                );
+                result.insert(file_name.clone(), File {
+                    name: String::from(file_name)
+                });
             }
         }
-        return result;
+        return Ok(result);
     }
 }
