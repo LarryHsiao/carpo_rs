@@ -42,7 +42,7 @@ fn delete() {
 
 /// Normal case of searching by name
 #[test]
-fn byName_success() {
+fn by_name_success() {
     let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
     TagDb { conn: &conn }.fire();
@@ -61,7 +61,7 @@ fn byName_success() {
 
 /// Searching by name panic when no tag founded.
 #[test]
-fn byName_not_exist() {
+fn by_name_not_exist() {
     let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
     TagDb { conn: &conn }.fire();
