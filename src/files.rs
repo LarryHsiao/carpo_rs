@@ -5,6 +5,8 @@ use std::path::PathBuf;
 use crate::arch::Source;
 use std::error::Error;
 
+use rusqlite::Connection;
+
 /// Source to fetch all files in workspace.
 pub struct AllFiles {
     pub root: PathBuf,
@@ -30,6 +32,20 @@ impl Source<HashMap<String, File>> for AllFiles {
                 );
             }
         }
+        return Ok(result);
+    }
+}
+
+pub struct FilesByTagName<'a> {
+    pub root: &'a PathBuf,
+    pub conn: &'a Connection,
+    pub tag_name: &'a str,
+}
+
+impl Source<HashMap<String, File>> for FilesByTagName<'_> {
+    fn value(&self) -> Result<HashMap<String, File>, Box<dyn Error>> {
+        let mut result: HashMap<String, File> = HashMap::new();
+        unimplemented!();
         return Ok(result);
     }
 }
