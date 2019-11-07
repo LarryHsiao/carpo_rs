@@ -2,7 +2,7 @@ use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
 use std::error::Error;
 
-use rusqlite::{Connection, NO_PARAMS};
+use rusqlite::{params, Connection, NO_PARAMS};
 
 use crate::arch::{Action, Source};
 
@@ -49,20 +49,33 @@ impl Source<HashMap<String, Tag>> for AllTags<'_> {
 
         for row in rows {
             let tag = row?;
-            result.insert(tag.name.clone(), tag);
+            result.insert(tag.name.to_string(), tag);
         }
         Ok(result)
     }
 }
 
 /// Source to find or create a Tag that have the given name
-pub struct TagByName {
-    name: String,
+pub struct TagByName<'a> {
+    pub conn: &'a Connection,
+    pub name: &'a str,
 }
 
-impl Source<Tag> for TagByName {
+impl Source<Tag> for TagByName<'_> {
     fn value(&self) -> Result<Tag, Box<dyn Error>> {
-        unimplemented!(" @ todo # 5 Create / Build Tag by name.")
+        // language=SQLite
+        let mut stmt = self.conn.prepare(
+            r#"
+            SELECT * FROM tags
+            WHERE name=(?1);
+        "#,
+        )?;
+        let tags = stmt.query_map(params![self.name], |row| Ok(Tag { name: row.get(1)? }))?;
+
+        for tag in tags {
+            return Result::Ok(tag?);
+        }
+        return Err(format!("No tag found, name={}", self.name))?;
     }
 }
 
