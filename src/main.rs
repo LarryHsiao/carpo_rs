@@ -1,16 +1,18 @@
 extern crate confy;
 
+use std::path::PathBuf;
+
+use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use structopt::StructOpt;
-use std::path::PathBuf;
+
+use crate::arch::Source;
+use crate::files::AllFiles;
+use crate::tags::AllTags;
 
 mod arch;
 mod files;
 mod tags;
-
-use crate::tags::AllTags;
-use crate::files::AllFiles;
-use crate::arch::Source;
 
 #[derive(StructOpt)]
 struct Cli {
@@ -43,6 +45,8 @@ fn main() {
     #[cfg(debug_assertions)]
     println!("{:#?}", cfg);
 
+    let conn = Connection::open("carpo.db").unwrap();
+
     let args = Cli::from_args();
     let command = &args.command;
     match command.as_ref() {
@@ -64,7 +68,9 @@ fn main() {
         }
         "tags" => {
             for (_name, tag) in {
-                AllTags {}.value().unwrap()
+                AllTags {
+                    conn: &conn
+                }.value().unwrap()
             } { println!("{}", tag.name) }
         }
         "search" => {
