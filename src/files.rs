@@ -5,10 +5,12 @@ use std::path::PathBuf;
 use crate::arch::Source;
 use std::error::Error;
 
+/// Source to fetch all files in workspace.
 pub struct AllFiles {
     pub root: PathBuf,
 }
 
+/// Object to represent a File in workspace.
 pub struct File {
     pub name: String,
 }

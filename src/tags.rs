@@ -27,6 +27,28 @@ impl Action for TagDb<'_> {
             );"#,
             NO_PARAMS,
         )?;
+        // language=SQLite
+        &self.conn.execute(
+            r#"
+               CREATE TABLE IF NOT EXISTS files(
+                    id integer primary key autoincrement,
+                    path text not null unique
+               );
+            "#,
+            NO_PARAMS,
+        );
+        // language=SQLite
+        &self.conn.execute(
+            r#"
+                CREATE TABLE IF NOT EXISTS files_tags(
+                    id integer primary key autoincrement,
+                    file_id integer not null ,
+                    tag_id integer not null ,
+                    unique (file_id, tag_id)
+                );
+            "#,
+            NO_PARAMS,
+        );
         Ok(())
     }
 }
