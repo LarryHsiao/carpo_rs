@@ -22,17 +22,17 @@ struct Cli {
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Config {
-    root: PathBuf
+    root: PathBuf,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            root: PathBuf::from(
-                format!(
-                    "{}{}", dirs::home_dir().unwrap().to_str().unwrap(), "/carpo_test/"
-                )
-            )
+            root: PathBuf::from(format!(
+                "{}{}",
+                dirs::home_dir().unwrap().to_str().unwrap(),
+                "/carpo_test/"
+            )),
         }
     }
 }
@@ -53,31 +53,24 @@ fn main() {
         "setup" => {
             let new_path = PathBuf::from(args.arg.unwrap());
             if new_path.is_dir() {
-                confy::store(
-                    CONFIG_NAME,
-                    Config {
-                        root: new_path
-                    },
-                ).unwrap()
+                confy::store(CONFIG_NAME, Config { root: new_path }).unwrap()
             }
         }
         "files" => {
-            for (_name, file) in {
-                AllFiles { root: cfg.root }.value().unwrap()
-            } { println!("{}", file.name) }
+            for (_name, file) in { AllFiles { root: cfg.root }.value().unwrap() } {
+                println!("{}", file.name)
+            }
         }
         "tags" => {
-            for (_name, tag) in {
-                AllTags {
-                    conn: &conn
-                }.value().unwrap()
-            } { println!("{}", tag.name) }
+            for (_name, tag) in { AllTags { conn: &conn }.value().unwrap() } {
+                println!("{}", tag.name)
+            }
         }
         "search" => {
             args.arg.expect("No keyword provided.");
             unimplemented!(" @todo #3 Search function.")
         }
         "serve" => unimplemented!(" @todo #1 http server"),
-        _ => panic!("Unrecognized command: {}", command)
+        _ => panic!("Unrecognized command: {}", command),
     }
 }
