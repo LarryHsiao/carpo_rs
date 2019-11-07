@@ -66,7 +66,7 @@ impl Source<Tag> for TagByName {
 /// Action to create a Tag.
 pub struct NewTag<'a> {
     pub conn: &'a Connection,
-    pub name: String,
+    pub name: &'a str,
 }
 
 impl Action for NewTag<'_> {
@@ -81,12 +81,17 @@ impl Action for NewTag<'_> {
 }
 
 /// A Action to delete a
-pub struct TagDeleteByName {
-    name: String
+pub struct TagDeleteByName<'a> {
+    pub conn: &'a Connection,
+    pub name: &'a str,
 }
 
-impl Action for TagDeleteByName {
+impl Action for TagDeleteByName<'_> {
     fn fire(&self) -> Result<(), Box<dyn (Error)>> {
-        unimplemented!(" @ todo $ 5 Delete Tag by name")
+        // language=SQLite
+        self.conn.execute(r#"
+            DELETE FROM tags WHERE name=(?1);
+        "#, &[&self.name])?;
+        Ok(())
     }
 }
