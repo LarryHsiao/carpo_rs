@@ -57,8 +57,8 @@ fn main() {
             }
         }
         "files" => {
-            for (_name, file) in { AllFiles { root: cfg.root }.value().unwrap() } {
-                println!("{}", file.name)
+            for file in { AllFiles { root: cfg.root }.value().unwrap() } {
+                println!("{}", file)
             }
         }
         "tags" => {
