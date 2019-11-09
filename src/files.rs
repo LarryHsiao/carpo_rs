@@ -1,10 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::error::Error;
 use std::fs;
-use std::fs::File;
 use std::path::PathBuf;
-
-use rusqlite::{params, Connection};
 
 use crate::arch::Source;
 

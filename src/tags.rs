@@ -1,7 +1,6 @@
 use std::collections::hash_map::RandomState;
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
-use std::path::PathBuf;
 
 use rusqlite::{params, Connection, NO_PARAMS};
 
@@ -164,7 +163,7 @@ pub struct AllCFiles<'a> {
 }
 
 impl Source<HashMap<String, CFile>> for AllCFiles<'_> {
-    fn value(&self) -> Result<HashMap<String, CFile, RandomState>, Box<Error>> {
+    fn value(&self) -> Result<HashMap<String, CFile, RandomState>, Box<dyn Error>> {
         let mut files = self.fs_source.value()?;
         let mut result: HashMap<String, CFile> = HashMap::new();
         let mut stmt = self.conn.prepare(

@@ -1,6 +1,4 @@
 use std::fs::File;
-use std::io::{self, Write};
-use std::ops::Index;
 
 use rusqlite::Connection;
 
@@ -15,12 +13,12 @@ use carpo::tags::{
 fn insert() {
     let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
-    TagDb { conn: &conn }.fire();
+    TagDb { conn: &conn }.fire().unwrap();
     let action = NewTag {
         conn: &conn,
         name: tag_name,
     };
-    action.fire();
+    action.fire().unwrap();
     let tags = AllTags { conn: &conn }.value().unwrap();
     assert_eq!(tags.len(), 1);
     assert_eq!(tags.get(tag_name).unwrap().name, tag_name)
@@ -31,17 +29,17 @@ fn insert() {
 fn delete() {
     let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
-    TagDb { conn: &conn }.fire();
+    TagDb { conn: &conn }.fire().unwrap();
     let new = NewTag {
         conn: &conn,
         name: tag_name,
     };
-    new.fire();
+    new.fire().unwrap();
     let action = TagDeleteByName {
         conn: &conn,
         name: tag_name,
     };
-    action.fire();
+    action.fire().unwrap();
     let tags = AllTags { conn: &conn }.value().unwrap();
     assert_eq!(tags.len(), 0);
 }
@@ -51,12 +49,12 @@ fn delete() {
 fn by_name_success() {
     let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
-    TagDb { conn: &conn }.fire();
+    TagDb { conn: &conn }.fire().unwrap();
     let action = NewTag {
         conn: &conn,
         name: tag_name,
     };
-    action.fire();
+    action.fire().unwrap();
     let source = TagByName {
         conn: &conn,
         name: tag_name,
@@ -70,7 +68,7 @@ fn by_name_success() {
 fn by_name_not_exist() {
     let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
-    TagDb { conn: &conn }.fire();
+    TagDb { conn: &conn }.fire().unwrap();
     let source = TagByName {
         conn: &conn,
         name: tag_name,
@@ -78,7 +76,7 @@ fn by_name_not_exist() {
     let result = source.value();
 
     match result {
-        Err(error) => assert!(true),
+        Err(_) => assert!(true),
         _ => assert!(false),
     }
 }
@@ -91,7 +89,7 @@ fn all_files_in_workspace() {
         let file_path = root.path().join(format!("temp{}", i.to_string()));
         File::create(file_path).unwrap();
     }
-    TagDb { conn: &conn }.fire();
+    TagDb { conn: &conn }.fire().unwrap();
     let file_source = AllCFiles {
         fs_source: &AllFiles {
             root: root.into_path(),
@@ -111,12 +109,12 @@ fn files_by_tag_name() {
         File::create(file_path).unwrap();
     }
     let tag_name = "Sample Name";
-    TagDb { conn: &conn }.fire();
+    TagDb { conn: &conn }.fire().unwrap();
     let action = NewTag {
         conn: &conn,
         name: tag_name,
     };
-    action.fire();
+    action.fire().unwrap();
     let root_path = root.into_path();
     let source = &TagByName {
         conn: &conn,
@@ -130,7 +128,7 @@ fn files_by_tag_name() {
     };
     let files = &file_source.value().unwrap();
     let attach_action = AttachTagAction {
-        file: files.iter().map(|(key, file)| file).next().unwrap(),
+        file: files.iter().map(|(_, file)| file).next().unwrap(),
         tag: &source.value().unwrap(),
         conn: &conn,
     };
