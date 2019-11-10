@@ -6,9 +6,9 @@ use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use structopt::StructOpt;
 
-use crate::arch::Source;
+use crate::arch::{Action, Source};
 use crate::files::AllFiles;
-use crate::tags::AllTags;
+use crate::tags::{AllTags, TagDb};
 
 mod arch;
 mod files;
@@ -46,6 +46,7 @@ fn main() {
     println!("{:#?}", cfg);
 
     let conn = Connection::open("carpo.db").unwrap();
+    TagDb{ conn: &conn }.fire().unwrap();
 
     let args = Cli::from_args();
     let command = &args.command;
