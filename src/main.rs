@@ -8,7 +8,7 @@ use structopt::StructOpt;
 
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
-use crate::tags::{AllTags, TagDb};
+use crate::tags::*;
 
 mod arch;
 mod files;
@@ -89,7 +89,17 @@ fn main() {
             }
         }
         Cli::Tags { control } => match control {
-            Some(control) => unimplemented!("{:?} ", control),
+            Some(control) => match control {
+                TagControl::Add { name } => NewTag {
+                    conn: &conn,
+                    name: name.as_str(),
+                }.fire().unwrap(),
+                TagControl::Delete { name } => TagDeleteByName {
+                    conn: &conn,
+                    name: name.as_str(),
+                }.fire().unwrap(),
+                TagControl::Attach { file_name } => unimplemented!(),
+            },
             None => {
                 for (_name, tag) in { AllTags { conn: &conn }.value().unwrap() } {
                     println!("{}", tag.name)
