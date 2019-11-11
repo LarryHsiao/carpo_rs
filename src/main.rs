@@ -16,11 +16,35 @@ mod tags;
 
 #[derive(StructOpt)]
 enum Cli {
-    Setup { path: String },
-    Files {},
-    Tags {},
-    Search { keyword: String },
+    /// Setup the carpo workspace path.
+    Setup {
+        /// The root path of carpo working on.
+        path: String,
+    },
+    Files,
+    Tags {
+        #[structopt(subcommand)]
+        control: Option<TagControl>,
+    },
+    /// Search anything in carpo's workspace.
+    Search {
+        /// The keyword to search.
+        keyword: String,
+    },
     Serve {},
+}
+
+#[derive(StructOpt, Debug)]
+enum TagControl {
+    /// Add a new Tag.
+    Add { name: String },
+    /// Delete a tag with name.
+    Delete { name: String },
+    /// Attach a Tag to a exist file.
+    Attach {
+        /// File name we want the Tag attach to.
+        file_name: String,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -64,11 +88,14 @@ fn main() {
                 println!("{}", file)
             }
         }
-        Cli::Tags {} => {
-            for (_name, tag) in { AllTags { conn: &conn }.value().unwrap() } {
-                println!("{}", tag.name)
+        Cli::Tags { control } => match control {
+            Some(control) => unimplemented!("{:?} ", control),
+            None => {
+                for (_name, tag) in { AllTags { conn: &conn }.value().unwrap() } {
+                    println!("{}", tag.name)
+                }
             }
-        }
+        },
         Cli::Search { keyword } => unimplemented!(" @todo #3 Search function.Keyword: {}", keyword),
         Cli::Serve {} => unimplemented!(" @todo #1 http server"),
     }
