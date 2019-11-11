@@ -15,9 +15,12 @@ mod files;
 mod tags;
 
 #[derive(StructOpt)]
-struct Cli {
-    command: String,
-    arg: Option<String>,
+enum Cli {
+    Setup { path: String },
+    Files {},
+    Tags {},
+    Search { keyword: String },
+    Serve {},
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -49,29 +52,24 @@ fn main() {
     TagDb { conn: &conn }.fire().unwrap();
 
     let args = Cli::from_args();
-    let command = &args.command;
-    match command.as_ref() {
-        "setup" => {
-            let new_path = PathBuf::from(args.arg.unwrap());
+    match args {
+        Cli::Setup { path } => {
+            let new_path = PathBuf::from(path);
             if new_path.is_dir() {
                 confy::store(CONFIG_NAME, Config { root: new_path }).unwrap()
             }
         }
-        "files" => {
+        Cli::Files {} => {
             for file in { AllFiles { root: cfg.root }.value().unwrap() } {
                 println!("{}", file)
             }
         }
-        "tags" => {
+        Cli::Tags {} => {
             for (_name, tag) in { AllTags { conn: &conn }.value().unwrap() } {
                 println!("{}", tag.name)
             }
         }
-        "search" => {
-            args.arg.expect("No keyword provided.");
-            unimplemented!(" @todo #3 Search function.")
-        }
-        "serve" => unimplemented!(" @todo #1 http server"),
-        _ => panic!("Unrecognized command: {}", command),
+        Cli::Search { keyword } => unimplemented!(" @todo #3 Search function.Keyword: {}", keyword),
+        Cli::Serve {} => unimplemented!(" @todo #1 http server"),
     }
 }
