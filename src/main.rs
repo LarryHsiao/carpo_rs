@@ -46,7 +46,7 @@ fn main() {
     println!("{:#?}", cfg);
 
     let conn = Connection::open("carpo.db").unwrap();
-    TagDb{ conn: &conn }.fire().unwrap();
+    TagDb { conn: &conn }.fire().unwrap();
 
     let args = Cli::from_args();
     let command = &args.command;
