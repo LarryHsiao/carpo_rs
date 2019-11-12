@@ -9,6 +9,7 @@ use structopt::StructOpt;
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
 use crate::tags::*;
+use std::error::Error;
 
 mod arch;
 mod files;
@@ -21,7 +22,7 @@ enum Cli {
         /// The root path of carpo working on.
         path: String,
     },
-    Files,
+    Files {},
     Tags {
         #[structopt(subcommand)]
         control: Option<TagControl>,
@@ -44,6 +45,8 @@ enum TagControl {
     Attach {
         /// File name we want the Tag attach to.
         file_name: String,
+        /// Tag name we want to do the attach.
+        tag_name: String,
     },
 }
 
@@ -90,15 +93,24 @@ fn main() {
         }
         Cli::Tags { control } => match control {
             Some(control) => match control {
-                TagControl::Add { name } => NewTag {
-                    conn: &conn,
-                    name: name.as_str(),
-                }.fire().unwrap(),
-                TagControl::Delete { name } => TagDeleteByName {
-                    conn: &conn,
-                    name: name.as_str(),
-                }.fire().unwrap(),
-                TagControl::Attach { file_name } => unimplemented!(),
+                TagControl::Add { name } => {
+                    let action = NewTag {
+                        conn: &conn,
+                        name: name.as_str(),
+                    };
+                    action.fire().unwrap();
+                }
+                TagControl::Delete { name } => {
+                    let action = TagDeleteByName {
+                        conn: &conn,
+                        name: name.as_str(),
+                    };
+                    action.fire().unwrap();
+                }
+                TagControl::Attach {
+                    file_name,
+                    tag_name,
+                } => unimplemented!(),
             },
             None => {
                 for (_name, tag) in { AllTags { conn: &conn }.value().unwrap() } {

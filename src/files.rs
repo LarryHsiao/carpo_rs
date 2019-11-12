@@ -15,8 +15,11 @@ impl Source<HashSet<String>> for AllFiles {
         let mut result: HashSet<String> = HashSet::new();
         if self.root.is_dir() {
             for entry in fs::read_dir(&self.root)? {
-                let file_name = String::from(entry?.path().to_str().unwrap_or_else(|| ""))
+                let mut file_name = String::from(entry?.path().to_str().unwrap_or_else(|| ""))
                     .replace(&self.root.to_str().unwrap_or_else(|| ""), "");
+                if file_name.starts_with("/") {
+                    file_name.replace_range(0..1, "")
+                }
                 result.insert(file_name.clone());
             }
         }

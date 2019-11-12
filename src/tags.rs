@@ -265,3 +265,32 @@ impl Action for AttachTagAction<'_> {
         Ok(())
     }
 }
+
+/// CFile by name
+pub struct CFileByName<'a> {
+    pub conn: &'a Connection,
+    pub name: &'a str,
+}
+
+impl Source<CFile> for CFileByName<'_> {
+    fn value(&self) -> Result<CFile, Box<dyn Error>> {
+        // language=SQLite
+        let mut stmt = self.conn.prepare(
+            r#"
+            SELECT * FROM files
+            WHERE path=(?1);
+        "#,
+        )?;
+        let files = stmt.query_map(params![self.name], |row| {
+            Ok(CFile {
+                id: row.get(0)?,
+                name: row.get(1)?,
+            })
+        })?;
+
+        for file in files {
+            return Result::Ok(file?);
+        }
+        return Err(format!("No file found, name={}", self.name))?;
+    }
+}

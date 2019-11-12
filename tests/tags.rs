@@ -5,7 +5,8 @@ use rusqlite::Connection;
 use carpo::arch::{Action, Source};
 use carpo::files::AllFiles;
 use carpo::tags::{
-    AllCFiles, AllTags, AttachTagAction, CFilesByTagName, NewTag, TagByName, TagDb, TagDeleteByName,
+    AllCFiles, AllTags, AttachTagAction, CFileByName, CFilesByTagName, NewTag, TagByName, TagDb,
+    TagDeleteByName,
 };
 
 /// Insert input/output
@@ -142,4 +143,45 @@ fn files_by_tag_name() {
         tag_name: tag_name,
     };
     assert_eq!(result.value().unwrap().len(), 1);
+}
+
+#[test]
+fn file_by_name() {
+    let file_name = "Sample Name";
+    let conn = Connection::open_in_memory().unwrap();
+    let root = tempfile::tempdir().unwrap();
+    let file_path = root.path().join(file_name);
+    File::create(file_path).unwrap();
+    let conn = Connection::open_in_memory().unwrap();
+    TagDb { conn: &conn }.fire().unwrap();
+    let cfile_source = AllCFiles {
+        fs_source: &AllFiles {
+            root: root.into_path(),
+        },
+        conn: &conn,
+    };
+    cfile_source.value().unwrap();
+    let source = CFileByName {
+        conn: &conn,
+        name: file_name,
+    };
+    let result = source.value().unwrap();
+    assert_eq!(result.name, file_name)
+}
+
+#[test]
+fn file_by_name_not_found() {
+    let conn = Connection::open_in_memory().unwrap();
+    let file_name = "Sample Name";
+    TagDb { conn: &conn }.fire().unwrap();
+    let source = CFileByName {
+        conn: &conn,
+        name: file_name,
+    };
+    let result = source.value();
+
+    match result {
+        Err(_) => assert!(true),
+        _ => assert!(false),
+    }
 }
