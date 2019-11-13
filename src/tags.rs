@@ -294,3 +294,35 @@ impl Source<CFile> for CFileByName<'_> {
         return Err(format!("No file found, name={}", self.name))?;
     }
 }
+
+/// Source to find tags attached on a given file.
+pub struct FileTags<'a> {
+    pub conn: &'a Connection,
+    pub file: &'a CFile,
+}
+
+impl Source<HashMap<String, Tag>> for FileTags<'_> {
+    fn value(&self) -> Result<HashMap<String, Tag, RandomState>, Box<dyn Error>> {
+        let mut result: HashMap<String, Tag> = HashMap::new();
+        let mut stmt = self.conn.prepare(
+            // language=SQLite
+            r#"
+                SELECT t.* FROM files_tags
+                JOIN files f ON files_tags.file_id = f.id
+                JOIN tags t on files_tags.tag_id = t.id
+                WHERE f.id=(?1);
+            "#,
+        )?;
+        let rows = stmt.query_map(params![self.file.id], |row| {
+            Ok(Tag {
+                id: row.get(0)?,
+                name: row.get(1)?,
+            })
+        })?;
+        for row in rows {
+            let row_res = row?;
+            result.insert(row_res.name.to_string(), row_res);
+        }
+        return Ok(result);
+    }
+}

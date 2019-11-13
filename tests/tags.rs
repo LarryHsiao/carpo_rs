@@ -5,8 +5,8 @@ use rusqlite::Connection;
 use carpo::arch::{Action, Source};
 use carpo::files::AllFiles;
 use carpo::tags::{
-    AllCFiles, AllTags, AttachTagAction, CFileByName, CFilesByTagName, NewTag, TagByName, TagDb,
-    TagDeleteByName,
+    AllCFiles, AllTags, AttachTagAction, CFileByName, CFilesByTagName, FileTags, NewTag, TagByName,
+    TagDb, TagDeleteByName,
 };
 
 /// Insert input/output
@@ -156,7 +156,7 @@ fn file_by_name() {
     TagDb { conn: &conn }.fire().unwrap();
     let cfile_source = AllCFiles {
         fs_source: &AllFiles {
-            root: root.into_path(),
+            root: root.into_path().clone(),
         },
         conn: &conn,
     };
@@ -184,4 +184,74 @@ fn file_by_name_not_found() {
         Err(_) => assert!(true),
         _ => assert!(false),
     }
+}
+
+/// Attached Tag map returned.
+#[test]
+fn tags_by_file_id_found() {
+    let conn = Connection::open_in_memory().unwrap();
+    let root = tempfile::tempdir().unwrap();
+    let file_names = ["file1", "file2", "file3"];
+    for i in 0..3 {
+        let file_path = root.path().join(file_names[i]);
+        File::create(file_path).unwrap();
+    }
+    let tag_name = "Sample Name";
+    TagDb { conn: &conn }.fire().unwrap();
+    let action = NewTag {
+        conn: &conn,
+        name: tag_name,
+    };
+    action.fire().unwrap();
+    let root_path = root.into_path();
+    let source = &TagByName {
+        conn: &conn,
+        name: tag_name,
+    };
+    let file_source = AllCFiles {
+        fs_source: &AllFiles {
+            root: root_path.clone(),
+        },
+        conn: &conn,
+    };
+    let files = &file_source.value().unwrap();
+    let attached_file = files.iter().map(|(_, file)| file).next().unwrap();
+    let attach_action = AttachTagAction {
+        file: attached_file,
+        tag: &source.value().unwrap(),
+        conn: &conn,
+    };
+    attach_action.fire().unwrap();
+
+    let result = FileTags {
+        conn: &conn,
+        file: attached_file,
+    };
+    assert_eq!(result.value().unwrap().len(), 1)
+}
+
+/// Return a empty map if no tag attached.
+#[test]
+fn tags_by_file_id_not_found() {
+    let conn = Connection::open_in_memory().unwrap();
+    let root = tempfile::tempdir().unwrap();
+    let file_names = ["file1", "file2", "file3"];
+    for i in 0..3 {
+        let file_path = root.path().join(file_names[i]);
+        File::create(file_path).unwrap();
+    }
+    TagDb { conn: &conn }.fire().unwrap();
+    let file_source = AllCFiles {
+        fs_source: &AllFiles {
+            root: root.into_path().clone(),
+        },
+        conn: &conn,
+    };
+    let files = &file_source.value().unwrap();
+    let target = files.iter().map(|(_, file)| file).next().unwrap();
+    let result = FileTags {
+        conn: &conn,
+        file: target,
+    };
+    assert_eq!(result.value().unwrap().len(), 0)
 }
