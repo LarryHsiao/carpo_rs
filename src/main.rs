@@ -25,6 +25,7 @@ enum Cli {
     Files {
         #[structopt(subcommand)]
         control: Option<FileControl>,
+        tag_name: Option<String>,
     },
     Tags {
         #[structopt(subcommand)]
@@ -47,21 +48,14 @@ enum FileControl {
 #[derive(StructOpt, Debug)]
 enum TagControl {
     /// Add a new Tag.
-    Add {
-        name: String,
-    },
+    Add { name: String },
     /// Delete a tag with name.
-    Delete {
-        name: String,
-    },
+    Delete { name: String },
     /// Attach a Tag to a exist file.
     Attach {
         /// File name we want the Tag attach to.
         file_name: String,
         /// Tag name we want to do the attach.
-        tag_name: String,
-    },
-    Files {
         tag_name: String,
     },
 }
@@ -102,13 +96,26 @@ fn main() {
                 confy::store(CONFIG_NAME, Config { root: new_path }).unwrap()
             }
         }
-        Cli::Files { control } => match control {
-            Some(control) => unimplemented!(),
-            None => {
-                for file in { AllFiles { root: cfg.root }.value().unwrap() } {
-                    println!("{}", file)
+        Cli::Files { control, tag_name } => match tag_name {
+            Some(tag_name) => {
+                let results = CFilesByTagName {
+                    file_source: &AllFiles { root: cfg.root },
+                    conn: &conn,
+                    tag_name: tag_name.as_str(),
+                };
+
+                for (_, file) in results.value().unwrap() {
+                    println!("{}", file.name)
                 }
             }
+            None => match control {
+                Some(control) => unimplemented!(),
+                None => {
+                    for file in { AllFiles { root: cfg.root }.value().unwrap() } {
+                        println!("{}", file)
+                    }
+                }
+            },
         },
         Cli::Tags { control, file_name } => match file_name {
             Some(name) => {
@@ -170,17 +177,6 @@ fn main() {
                         conn: &conn,
                     };
                     attach_action.fire().unwrap();
-                }
-                TagControl::Files { tag_name } => {
-                    let results = CFilesByTagName {
-                        file_source: &AllFiles { root: cfg.root },
-                        conn: &conn,
-                        tag_name: tag_name.as_str(),
-                    };
-
-                    for (_, file) in results.value().unwrap() {
-                        println!("{}", file.name)
-                    }
                 }
             },
             None => {
