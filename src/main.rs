@@ -9,7 +9,6 @@ use structopt::StructOpt;
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
 use crate::tags::*;
-use std::error::Error;
 
 mod arch;
 mod files;
@@ -63,6 +62,9 @@ enum TagControl {
 #[derive(Debug, Serialize, Deserialize)]
 struct Config {
     root: PathBuf,
+    /// Place holder field to avoid the ending bug when the previous config file
+    /// is shorter then the new one.
+    place_holder: String,
 }
 
 impl Default for Config {
@@ -73,6 +75,7 @@ impl Default for Config {
                 dirs::home_dir().unwrap().to_str().unwrap(),
                 "/carpo_test/"
             )),
+            place_holder: "".to_string(),
         }
     }
 }
@@ -85,7 +88,11 @@ fn main() {
     #[cfg(debug_assertions)]
     println!("{:#?}", cfg);
 
-    let conn = Connection::open("carpo.db").unwrap();
+    let conn_r = Connection::open(format!(
+        "{}/carpo.db",
+        cfg.root.clone().into_os_string().into_string().unwrap()
+    ));
+    let conn = conn_r.unwrap();
     TagDb { conn: &conn }.fire().unwrap();
 
     let args = Cli::from_args();
@@ -93,7 +100,14 @@ fn main() {
         Cli::Setup { path } => {
             let new_path = PathBuf::from(path);
             if new_path.is_dir() {
-                confy::store(CONFIG_NAME, Config { root: new_path }).unwrap()
+                let storing = confy::store(
+                    CONFIG_NAME,
+                    Config {
+                        root: new_path,
+                        place_holder: "".to_string(),
+                    },
+                );
+                storing.unwrap();
             }
         }
         Cli::Files { control, tag_name } => match tag_name {
@@ -109,7 +123,7 @@ fn main() {
                 }
             }
             None => match control {
-                Some(control) => unimplemented!(),
+                Some(_control) => unimplemented!(),
                 None => {
                     for file in { AllFiles { root: cfg.root }.value().unwrap() } {
                         println!("{}", file)

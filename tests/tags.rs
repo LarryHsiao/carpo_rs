@@ -148,7 +148,6 @@ fn files_by_tag_name() {
 #[test]
 fn file_by_name() {
     let file_name = "Sample Name";
-    let conn = Connection::open_in_memory().unwrap();
     let root = tempfile::tempdir().unwrap();
     let file_path = root.path().join(file_name);
     File::create(file_path).unwrap();
