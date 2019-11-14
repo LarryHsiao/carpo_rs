@@ -1,9 +1,6 @@
-extern crate confy;
-
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use rusqlite::Connection;
-use serde::{Deserialize, Serialize};
 use structopt::StructOpt;
 
 use crate::arch::{Action, Source};
@@ -16,11 +13,6 @@ mod tags;
 
 #[derive(StructOpt)]
 enum Cli {
-    /// Setup the carpo workspace path.
-    Setup {
-        /// The root path of carpo working on.
-        path: String,
-    },
     Files {
         #[structopt(subcommand)]
         control: Option<FileControl>,
@@ -41,7 +33,7 @@ enum Cli {
 
 #[derive(StructOpt, Debug)]
 enum FileControl {
-    Phantom { /*Place holder*/ },
+    Phantom {/*Place holder*/},
 }
 
 #[derive(StructOpt, Debug)]
@@ -59,56 +51,39 @@ enum TagControl {
     },
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct Config {
-    /// Place holder field to avoid the ending bug when the previous config file
-    /// is shorter then the new one.
-    place_holder: String,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            place_holder: "".to_string(),
-        }
-    }
-}
-
-const CONFIG_NAME: &str = "carpo.config";
-
 /// Main function of Carpo
 fn main() {
-    let cfg: Config = confy::load(CONFIG_NAME).unwrap();
-    #[cfg(debug_assertions)]
-    println!("{:#?}", cfg);
+    let pwd = std::env::current_dir().unwrap();
+    let args = Cli::from_args();
 
-    let root = std::env::current_dir().unwrap();
+    let carpo_db = PathBuf::from(format!(
+        "{}/{}",
+        pwd.clone().into_os_string().into_string().unwrap(),
+        "carpo.db"
+    ));
+    if !Path::new(&carpo_db).exists() {
+        use std::io::{stdin, stdout, Write};
+        let mut s = String::new();
+        println!("Initialize the carpo here? [y/n]");
+        let _ = stdout().flush();
+        stdin().read_line(&mut s);
+        if s.starts_with('n') {
+            return;
+        }
+    }
 
     let conn_r = Connection::open(format!(
         "{}/carpo.db",
-        root.clone().into_os_string().into_string().unwrap()
+        pwd.clone().into_os_string().into_string().unwrap()
     ));
     let conn = conn_r.unwrap();
     TagDb { conn: &conn }.fire().unwrap();
 
-    let args = Cli::from_args();
     match args {
-        Cli::Setup { path } => {
-            let new_path = PathBuf::from(path);
-            if new_path.is_dir() {
-                let storing = confy::store(
-                    CONFIG_NAME,
-                    Config {
-                        place_holder: "".to_string(),
-                    },
-                );
-                storing.unwrap();
-            }
-        }
         Cli::Files { control, tag_name } => match tag_name {
             Some(tag_name) => {
                 let results = CFilesByTagName {
-                    file_source: &AllFiles { root: root },
+                    file_source: &AllFiles { root: pwd },
                     conn: &conn,
                     tag_name: tag_name.as_str(),
                 };
@@ -120,7 +95,7 @@ fn main() {
             None => match control {
                 Some(_control) => unimplemented!(),
                 None => {
-                    for file in { AllFiles { root: root }.value().unwrap() } {
+                    for file in { AllFiles { root: pwd }.value().unwrap() } {
                         println!("{}", file)
                     }
                 }
@@ -140,13 +115,13 @@ fn main() {
                     println!("{}", tag.name);
                 }
             }
-            None => tag_control(root, &conn, control),
+            None => tag_control(pwd, &conn, control),
         },
         Cli::Search { keyword } => {
             let source = FileSearching {
                 keyword: keyword.as_str(),
                 conn: &conn,
-                file_source: &AllFiles { root: root },
+                file_source: &AllFiles { root: pwd },
             };
             let results = source.value().unwrap();
             for (_, file) in results {
