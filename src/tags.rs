@@ -326,3 +326,43 @@ impl Source<HashMap<String, Tag>> for FileTags<'_> {
         return Ok(result);
     }
 }
+
+/// Source to search files by keyword
+pub struct FileSearching<'a> {
+    /// The key word we want to search.
+    pub keyword: &'a str,
+    pub conn: &'a Connection,
+    pub file_source: &'a dyn Source<HashSet<String>>,
+}
+
+impl Source<HashMap<String, CFile>> for FileSearching<'_> {
+    fn value(&self) -> Result<HashMap<String, CFile, RandomState>, Box<dyn Error>> {
+        let mut result: HashMap<String, CFile> = HashMap::new();
+        let mut stmt = self.conn.prepare(
+            // language=SQLite
+            r#"
+            SELECT f.* FROM files as f
+            LEFT OUTER JOIN files_tags ft on f.id = ft.file_id
+            LEFT OUTER JOIN tags t on ft.tag_id = t.id
+            WHERE f.path like (?1)
+            OR t.name like (?1);
+            "#,
+        )?;
+
+        let keyword = format!("%{}%", self.keyword);
+        let db_files = stmt.query_map(params![keyword], |row| {
+            Ok(CFile {
+                id: row.get(0)?,
+                name: row.get(1)?,
+            })
+        })?;
+        let files: HashSet<String> = self.file_source.value()?;
+        for db_file in db_files {
+            let db_file = db_file?;
+            if files.contains(&db_file.name) {
+                result.insert(db_file.name.clone(), db_file);
+            }
+        }
+        return Ok(result);
+    }
+}

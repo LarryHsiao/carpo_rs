@@ -5,8 +5,8 @@ use rusqlite::Connection;
 use carpo::arch::{Action, Source};
 use carpo::files::AllFiles;
 use carpo::tags::{
-    AllCFiles, AllTags, AttachTagAction, CFileByName, CFilesByTagName, FileTags, NewTag, TagByName,
-    TagDb, TagDeleteByName,
+    AllCFiles, AllTags, AttachTagAction, CFileByName, CFilesByTagName, FileSearching, FileTags,
+    NewTag, TagByName, TagDb, TagDeleteByName,
 };
 
 /// Insert input/output
@@ -253,4 +253,51 @@ fn tags_by_file_id_not_found() {
         file: target,
     };
     assert_eq!(result.value().unwrap().len(), 0)
+}
+
+#[test]
+fn file_searching_found() {
+    let conn = Connection::open_in_memory().unwrap();
+    let root = tempfile::tempdir().unwrap();
+    let file_names = ["file1", "file2", "file3"];
+    for i in 0..3 {
+        let file_path = root.path().join(file_names[i]);
+        File::create(file_path).unwrap();
+    }
+    let tag_name = "Sample Name";
+    TagDb { conn: &conn }.fire().unwrap();
+    let action = NewTag {
+        conn: &conn,
+        name: tag_name,
+    };
+    action.fire().unwrap();
+    let root_path = root.into_path();
+    let source = &TagByName {
+        conn: &conn,
+        name: tag_name,
+    };
+    let file_source = AllCFiles {
+        fs_source: &AllFiles {
+            root: root_path.clone(),
+        },
+        conn: &conn,
+    };
+    let files = &file_source.value().unwrap();
+    let attached_file = files.iter().map(|(_, file)| file).next().unwrap();
+    let attach_action = AttachTagAction {
+        file: attached_file,
+        tag: &source.value().unwrap(),
+        conn: &conn,
+    };
+    attach_action.fire().unwrap();
+
+    let result_r = FileSearching {
+        keyword: tag_name,
+        conn: &conn,
+        file_source: &AllFiles {
+            root: root_path.clone(),
+        },
+    };
+    let result = result_r.value().unwrap();
+    assert_eq!(result.len(), 1)
 }

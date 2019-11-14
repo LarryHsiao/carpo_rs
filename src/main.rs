@@ -147,7 +147,17 @@ fn main() {
             }
             None => tag_control(cfg, &conn, control),
         },
-        Cli::Search { keyword } => unimplemented!(" @todo #3 Search function.Keyword: {}", keyword),
+        Cli::Search { keyword } => {
+            let source = FileSearching {
+                keyword: keyword.as_str(),
+                conn: &conn,
+                file_source: &AllFiles { root: cfg.root },
+            };
+            let results = source.value().unwrap();
+            for (_, file) in results {
+                println!("{}", file.name);
+            }
+        }
         Cli::Serve {} => unimplemented!(" @todo #1 http server"),
     }
 
