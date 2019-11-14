@@ -41,7 +41,7 @@ enum Cli {
 
 #[derive(StructOpt, Debug)]
 enum FileControl {
-    Phantom {/*Place holder*/},
+    Phantom { /*Place holder*/ },
 }
 
 #[derive(StructOpt, Debug)]
@@ -61,7 +61,6 @@ enum TagControl {
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Config {
-    root: PathBuf,
     /// Place holder field to avoid the ending bug when the previous config file
     /// is shorter then the new one.
     place_holder: String,
@@ -70,11 +69,6 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            root: PathBuf::from(format!(
-                "{}{}",
-                dirs::home_dir().unwrap().to_str().unwrap(),
-                "/carpo_test/"
-            )),
             place_holder: "".to_string(),
         }
     }
@@ -88,9 +82,11 @@ fn main() {
     #[cfg(debug_assertions)]
     println!("{:#?}", cfg);
 
+    let root = std::env::current_dir().unwrap();
+
     let conn_r = Connection::open(format!(
         "{}/carpo.db",
-        cfg.root.clone().into_os_string().into_string().unwrap()
+        root.clone().into_os_string().into_string().unwrap()
     ));
     let conn = conn_r.unwrap();
     TagDb { conn: &conn }.fire().unwrap();
@@ -103,7 +99,6 @@ fn main() {
                 let storing = confy::store(
                     CONFIG_NAME,
                     Config {
-                        root: new_path,
                         place_holder: "".to_string(),
                     },
                 );
@@ -113,7 +108,7 @@ fn main() {
         Cli::Files { control, tag_name } => match tag_name {
             Some(tag_name) => {
                 let results = CFilesByTagName {
-                    file_source: &AllFiles { root: cfg.root },
+                    file_source: &AllFiles { root: root },
                     conn: &conn,
                     tag_name: tag_name.as_str(),
                 };
@@ -125,7 +120,7 @@ fn main() {
             None => match control {
                 Some(_control) => unimplemented!(),
                 None => {
-                    for file in { AllFiles { root: cfg.root }.value().unwrap() } {
+                    for file in { AllFiles { root: root }.value().unwrap() } {
                         println!("{}", file)
                     }
                 }
@@ -145,13 +140,13 @@ fn main() {
                     println!("{}", tag.name);
                 }
             }
-            None => tag_control(cfg, &conn, control),
+            None => tag_control(root, &conn, control),
         },
         Cli::Search { keyword } => {
             let source = FileSearching {
                 keyword: keyword.as_str(),
                 conn: &conn,
-                file_source: &AllFiles { root: cfg.root },
+                file_source: &AllFiles { root: root },
             };
             let results = source.value().unwrap();
             for (_, file) in results {
@@ -161,7 +156,7 @@ fn main() {
         Cli::Serve {} => unimplemented!(" @todo #1 http server"),
     }
 
-    fn tag_control(cfg: Config, conn: &Connection, control: Option<TagControl>) {
+    fn tag_control(root: PathBuf, conn: &Connection, control: Option<TagControl>) {
         match control {
             Some(control) => match control {
                 TagControl::Add { name } => {
@@ -183,7 +178,7 @@ fn main() {
                     tag_name,
                 } => {
                     let all_files = AllCFiles {
-                        fs_source: &AllFiles { root: cfg.root },
+                        fs_source: &AllFiles { root: root },
                         conn: &conn,
                     };
                     all_files.value().unwrap(); // to build the file table in db.
