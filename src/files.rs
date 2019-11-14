@@ -20,6 +20,9 @@ impl Source<HashSet<String>> for AllFiles {
                 if file_name.starts_with("/") {
                     file_name.replace_range(0..1, "")
                 }
+                if file_name.eq(&"carpo.db".to_string()) {
+                    continue;
+                }
                 result.insert(file_name.clone());
             }
         }
