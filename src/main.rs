@@ -54,28 +54,22 @@ enum TagControl {
 /// Main function of Carpo
 fn main() {
     let pwd = std::env::current_dir().unwrap();
+    let pwd_string = pwd.clone().into_os_string().into_string().unwrap();
     let args = Cli::from_args();
 
-    let carpo_db = PathBuf::from(format!(
-        "{}/{}",
-        pwd.clone().into_os_string().into_string().unwrap(),
-        "carpo.db"
-    ));
+    let carpo_db = PathBuf::from(format!("{}/carpo.db", pwd_string));
     if !Path::new(&carpo_db).exists() {
         use std::io::{stdin, stdout, Write};
         let mut s = String::new();
         println!("Initialize the carpo here? [y/n]");
         let _ = stdout().flush();
-        stdin().read_line(&mut s);
+        stdin().read_line(&mut s).unwrap();
         if s.starts_with('n') {
             return;
         }
     }
 
-    let conn_r = Connection::open(format!(
-        "{}/carpo.db",
-        pwd.clone().into_os_string().into_string().unwrap()
-    ));
+    let conn_r = Connection::open(format!("{}/carpo.db", pwd_string));
     let conn = conn_r.unwrap();
     TagDb { conn: &conn }.fire().unwrap();
 
@@ -83,7 +77,7 @@ fn main() {
         Cli::Files { control, tag_name } => match tag_name {
             Some(tag_name) => {
                 let results = CFilesByTagName {
-                    file_source: &AllFiles { root: pwd },
+                    file_source: &AllFiles { root: pwd.clone() },
                     conn: &conn,
                     tag_name: tag_name.as_str(),
                 };
@@ -95,7 +89,7 @@ fn main() {
             None => match control {
                 Some(_control) => unimplemented!(),
                 None => {
-                    for file in { AllFiles { root: pwd }.value().unwrap() } {
+                    for file in { AllFiles { root: pwd.clone() }.value().unwrap() } {
                         println!("{}", file)
                     }
                 }
