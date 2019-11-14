@@ -3,6 +3,13 @@ name = "carpo"
 version = "0.1.0"
 authors = ["Larry Hsiao <larryhsiao@larryhsiao.com>"]
 edition = "2018"
+license = "MIT"
+description = "A tool to tag and search files."
+readme = "readme.md"
+homepage = "https://github.com/LarryHsiao/carpo_rs"
+repository = "https://github.com/LarryHsiao/carpo_rs"
+keywords = ["cli", "search", "file"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 structopt = "0.3"
