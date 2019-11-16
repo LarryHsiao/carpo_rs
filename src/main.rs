@@ -6,10 +6,12 @@ use structopt::StructOpt;
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
 use crate::tags::*;
+use crate::gui::GUI;
 
 mod arch;
 mod files;
 mod tags;
+mod gui;
 
 #[derive(StructOpt)]
 enum Cli {
@@ -29,11 +31,12 @@ enum Cli {
         keyword: String,
     },
     Serve {},
+    GUI {},
 }
 
 #[derive(StructOpt, Debug)]
 enum FileControl {
-    Phantom {/*Place holder*/},
+    Phantom { /*Place holder*/ },
 }
 
 #[derive(StructOpt, Debug)]
@@ -123,6 +126,10 @@ fn main() {
             }
         }
         Cli::Serve {} => unimplemented!(" @todo #1 http server"),
+        Cli::GUI {} => GUI {
+            fs_source: &AllFiles { root: pwd },
+            conn: &conn
+        }.fire().unwrap(),
     }
 
     fn tag_control(root: PathBuf, conn: &Connection, control: Option<TagControl>) {

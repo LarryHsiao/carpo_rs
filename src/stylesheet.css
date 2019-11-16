@@ -1,0 +1,7 @@
+.list {
+    display: flex;
+    height: 300px;
+    padding: 15px;
+    background-color: #61a0f8;
+    flex-direction: column;
+}
