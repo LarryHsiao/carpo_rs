@@ -14,7 +14,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 structopt = "0.3"
 serde = { version = "1.0", features = ["derive"] }
-rusqlite = "0.20.0"
+rusqlite = { version = "0.20.0", features = ["bundled"]}
 dirs = "2.0"
 tempfile = "3"
 azul = { git = "https://github.com/maps4print/azul" }
