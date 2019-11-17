@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::error::Error;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 
 use crate::arch::Source;
 
@@ -17,7 +17,7 @@ impl Source<HashSet<String>> for AllFiles {
             for entry in fs::read_dir(&self.root)? {
                 let mut file_name = String::from(entry?.path().to_str().unwrap_or_else(|| ""))
                     .replace(&self.root.to_str().unwrap_or_else(|| ""), "");
-                if file_name.starts_with("/") {
+                if file_name.starts_with(MAIN_SEPARATOR) {
                     file_name.replace_range(0..1, "")
                 }
                 if file_name.eq(&"carpo.db".to_string()) {
