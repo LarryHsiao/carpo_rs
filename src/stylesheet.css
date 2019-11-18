@@ -1,8 +1,0 @@
-.list {
-    display: flex;
-    height: 100%;
-    font-size: 30px;
-    width: 100%;
-    background-color: #61a0f8;
-    flex-direction: column;
-}
