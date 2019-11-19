@@ -92,8 +92,15 @@ fn main() {
             None => match control {
                 Some(_control) => unimplemented!(),
                 None => {
-                    for file in { AllFiles { root: pwd.clone() }.value().unwrap() } {
-                        println!("{}", file)
+                    for (_, file) in {
+                        AllCFiles {
+                            fs_source: &AllFiles { root: pwd.clone() },
+                            conn: &conn,
+                        }
+                        .value()
+                        .unwrap()
+                    } {
+                        println!("{}", file.name)
                     }
                 }
             },
