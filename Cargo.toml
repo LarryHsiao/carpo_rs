@@ -17,6 +17,7 @@ serde = { version = "1.0", features = ["derive"] }
 rusqlite = { version = "0.20.0", features = ["bundled"]}
 dirs = "2.0"
 tempfile = "3"
+conrod = "0.61.1"
 
 [profile.release]
 panic = 'abort'

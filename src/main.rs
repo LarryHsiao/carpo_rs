@@ -6,10 +6,12 @@ use structopt::StructOpt;
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
 use crate::tags::*;
+use crate::terminals::UI;
 
 mod arch;
 mod files;
 mod tags;
+mod terminals;
 
 #[derive(StructOpt)]
 enum Cli {
@@ -29,6 +31,7 @@ enum Cli {
         keyword: String,
     },
     Serve {},
+    UI {},
 }
 
 #[derive(StructOpt, Debug)]
@@ -123,6 +126,9 @@ fn main() {
             }
         }
         Cli::Serve {} => unimplemented!(" @todo #1 http server"),
+        Cli::UI {} => {
+            UI {}.fire();
+        }
     }
 
     fn tag_control(root: PathBuf, conn: &Connection, control: Option<TagControl>) {
