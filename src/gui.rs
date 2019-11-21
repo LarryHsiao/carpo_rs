@@ -6,6 +6,9 @@ pub struct UI {}
 
 impl Action for UI {
     fn fire(&self) -> Result<(), Box<dyn Error>> {
-        unimplemented!(" @todo #10 terminal uis")
+        let mut frame = sciter::Window::new();
+        frame.load_file("html/index.html");
+        frame.run_app();
+        Ok(())
     }
 }

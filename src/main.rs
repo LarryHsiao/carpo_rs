@@ -6,12 +6,12 @@ use structopt::StructOpt;
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
 use crate::tags::*;
-use crate::terminals::UI;
+use crate::gui::UI;
 
 mod arch;
 mod files;
 mod tags;
-mod terminals;
+mod gui;
 
 #[derive(StructOpt)]
 enum Cli {

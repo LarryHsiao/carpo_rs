@@ -1,4 +1,4 @@
 pub mod arch;
 pub mod files;
 pub mod tags;
-pub mod terminals;
+pub mod gui;
