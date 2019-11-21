@@ -5,13 +5,13 @@ use structopt::StructOpt;
 
 use crate::arch::{Action, Source};
 use crate::files::AllFiles;
-use crate::tags::*;
 use crate::gui::UI;
+use crate::tags::*;
 
 mod arch;
 mod files;
-mod tags;
 mod gui;
+mod tags;
 
 #[derive(StructOpt)]
 enum Cli {
