@@ -1,0 +1,7 @@
+function self.ready(){
+    view.load_files();
+}
+
+function load_files(size){
+    $(#abc).text = size +""
+}

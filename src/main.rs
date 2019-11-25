@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate sciter;
+
 use std::path::{Path, PathBuf};
 
 use rusqlite::Connection;
@@ -134,7 +137,11 @@ fn main() {
         }
         Cli::Serve {} => unimplemented!(" @todo #1 http server"),
         Cli::UI {} => {
-            UI {}.fire();
+            UI {
+                conn: &conn,
+                fs_source: &AllFiles { root: pwd.clone() },
+            }
+            .fire();
         }
     }
 
