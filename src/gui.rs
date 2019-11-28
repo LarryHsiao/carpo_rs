@@ -48,7 +48,9 @@ impl Events<'_> {
         let files = AllCFiles {
             conn: self.ui.conn,
             fs_source: self.ui.fs_source,
-        }.value().unwrap();
+        }
+        .value()
+        .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
@@ -61,7 +63,9 @@ impl Events<'_> {
             keyword: string.as_str(),
             conn: self.ui.conn,
             file_source: self.ui.fs_source,
-        }.value().unwrap();
+        }
+        .value()
+        .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
