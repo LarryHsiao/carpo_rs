@@ -5,24 +5,19 @@
     <title>This is title</title>
     <link rel=stylesheet type="text/css" href="stylesheet.css">
 </head>
+<style>
+    div#list > select {
+        width: 500px;
+        height: 500px;
+    }
+</style>
 <script type="text/tiscript" src="index.tis"></script>
 <body>
-<h1 id="abc">
-    Hello world2!
-</h1>
-<button>
-    this
-</button>
-<form>
-    First name:<br>
-    <input type="text" name="firstname" value="Mickey">
-    <br>
-    Last name:<br>
-    <input type="text" name="lastname" value="Mouse">
-    <br><br>
-    <input type="submit" value="Submit">
-</form>
-
-
+<div>
+    <input id="search_input" type="text">
+</div>
+<div id="list">
+    <select type="select"></select>
+</div>
 </body>
 </html>

@@ -1,7 +1,16 @@
 function self.ready(){
     view.load_files();
+    $(#search_input).on("change", search);
 }
 
-function load_files(size){
-    $(#abc).text = size +""
+function append_file(file_name){
+    $(div#list > select).$append(<option>{ file_name }</option>);
+}
+
+function search(){
+    view.search($(#search_input).text)
+}
+
+function clear_files(){
+    $(div#list > select).clear()
 }

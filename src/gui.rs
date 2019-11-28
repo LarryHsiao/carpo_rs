@@ -8,6 +8,7 @@ use sciter::{Element, Value};
 
 use crate::arch::{Action, Source};
 use crate::tags::AllCFiles;
+use crate::tags::FileSearching;
 use rusqlite::Connection;
 use std::collections::HashSet;
 
@@ -44,20 +45,32 @@ struct Events<'a> {
 impl Events<'_> {
     fn load_files(&self) {
         let root = Element::from_window(self.hwnd).unwrap();
-        root.call_function(
-            "load_files",
-            &make_args!(
-                1 //            AllCFiles {
-                  //                conn: self.ui.conn,
-                  //                fs_source: self.ui.fs_source,
-                  //            }.value().unwrap().len()
-            ),
-        );
+        let files = AllCFiles {
+            conn: self.ui.conn,
+            fs_source: self.ui.fs_source,
+        }.value().unwrap();
+        for (key, file) in files {
+            root.call_function("append_file", &make_args!(key));
+        }
+    }
+
+    fn search(&self, string: String) {
+        let root = Element::from_window(self.hwnd).unwrap();
+        root.call_function("clear_files", &[]);
+        let files = FileSearching {
+            keyword: string.as_str(),
+            conn: self.ui.conn,
+            file_source: self.ui.fs_source,
+        }.value().unwrap();
+        for (key, file) in files {
+            root.call_function("append_file", &make_args!(key));
+        }
     }
 }
 
 impl sciter::EventHandler for Events<'_> {
     dispatch_script_call! {
         fn load_files();
+        fn search(String);
     }
 }
