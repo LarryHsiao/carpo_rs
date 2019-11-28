@@ -53,8 +53,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             fs_source: self.ui.fs_source,
         }
-            .value()
-            .unwrap();
+        .value()
+        .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
@@ -68,17 +68,15 @@ impl Events<'_> {
             conn: self.ui.conn,
             file_source: self.ui.fs_source,
         }
-            .value()
-            .unwrap();
+        .value()
+        .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
     }
 
     fn open(&self, file_name: String) {
-        open::that(Path::new(
-            &format!("{}/{}", self.pwd, file_name)
-        )).unwrap();
+        open::that(Path::new(&format!("{}/{}", self.pwd, file_name))).unwrap();
     }
 }
 

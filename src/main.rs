@@ -141,7 +141,7 @@ fn main() {
             UI {
                 conn: &conn,
                 fs_source: &AllFiles { root: pwd.clone() },
-                pwd: pwd_string.clone()
+                pwd: pwd_string.clone(),
             }
             .fire();
         }
