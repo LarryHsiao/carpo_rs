@@ -4,7 +4,12 @@ function self.ready(){
 }
 
 function append_file(file_name){
-    $(div#list > select).$append(<option>{ file_name }</option>);
+    var element = new Element("option")
+    element.text = file_name
+    element << event dblclick $(option){
+        view.open(file_name)
+    }
+    $(div#list > select).append(element);
 }
 
 function search(){
