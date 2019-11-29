@@ -114,7 +114,16 @@ impl Source<Tag> for TagByName<'_> {
         for tag in tags {
             return Result::Ok(tag?);
         }
-        return Err(format!("No tag found, name={}", self.name))?;
+
+        NewTag {
+            conn: self.conn,
+            name: self.name,
+        }.fire()?;
+
+        Ok(Tag {
+            id: self.conn.last_insert_rowid(),
+            name: self.name.to_string(),
+        })
     }
 }
 
