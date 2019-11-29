@@ -7,9 +7,10 @@ use sciter::window::Options::DebugMode;
 use sciter::{Element, Value};
 
 use crate::arch::{Action, Source};
-use crate::tags::FileSearching;
 use crate::tags::{AllCFiles, CFileByName, FileTags};
+use crate::tags::{AttachTagAction, FileSearching, TagByName};
 use rusqlite::Connection;
+use sciter::utf::u2sn;
 use std::collections::HashSet;
 use std::path::Path;
 
@@ -97,6 +98,27 @@ impl Events<'_> {
             root.call_function("append_tag", &make_args!(key));
         }
     }
+
+    fn attach_tag(&self, file_name: String, tag_name: String) {
+        AttachTagAction {
+            conn: self.ui.conn,
+            file: &CFileByName {
+                name: file_name.as_str(),
+                conn: self.ui.conn,
+            }
+            .value()
+            .unwrap(),
+            tag: &TagByName {
+                conn: self.ui.conn,
+                name: tag_name.as_str(),
+            }
+            .value()
+            .unwrap(),
+        }
+        .fire()
+        .unwrap();
+        self.load_tags(file_name);
+    }
 }
 
 impl sciter::EventHandler for Events<'_> {
@@ -105,5 +127,6 @@ impl sciter::EventHandler for Events<'_> {
         fn load_tags(String);
         fn search(String);
         fn open(String);
+        fn attach_tag(String, String);
     }
 }

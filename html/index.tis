@@ -3,7 +3,16 @@ function self.ready(){
     $(#search_input).on("change", search);
     $(#file_list).onValueChanged = function(){
         view.load_tags(this.value)
-    }
+    };
+    $(#tag_input).on("keyup", function(event){
+        if(event.keyCode == 65293){
+            event.preventDefault();
+            view.attach_tag(
+                $(#file_list).$(option:current).value,
+                $(#tag_input).text
+            )
+        }
+    });
 }
 
 function append_tag(tag_name){
