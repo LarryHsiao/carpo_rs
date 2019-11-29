@@ -7,7 +7,7 @@ use sciter::window::Options::DebugMode;
 use sciter::{Element, Value};
 
 use crate::arch::{Action, Source};
-use crate::tags::AllCFiles;
+use crate::tags::{AllCFiles, FileTags, CFileByName};
 use crate::tags::FileSearching;
 use rusqlite::Connection;
 use std::collections::HashSet;
@@ -53,8 +53,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             fs_source: self.ui.fs_source,
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
@@ -68,8 +68,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             file_source: self.ui.fs_source,
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
@@ -78,11 +78,27 @@ impl Events<'_> {
     fn open(&self, file_name: String) {
         open::that(Path::new(&format!("{}/{}", self.pwd, file_name))).unwrap();
     }
+
+    fn load_tags(&self, file_name: String) {
+        let root = Element::from_window(self.hwnd).unwrap();
+        root.call_function("clear_tags", &[]);
+        let tags = FileTags {
+            conn: self.ui.conn,
+            file: &CFileByName {
+                conn: self.ui.conn,
+                name: file_name.as_str(),
+            }.value().unwrap(),
+        }.value().unwrap();
+        for (key, tag) in tags {
+            root.call_function("append_tag", &make_args!(key));
+        }
+    }
 }
 
 impl sciter::EventHandler for Events<'_> {
     dispatch_script_call! {
         fn load_files();
+        fn load_tags(String);
         fn search(String);
         fn open(String);
     }

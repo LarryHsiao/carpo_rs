@@ -1,7 +1,17 @@
 function self.ready(){
     view.load_files();
     $(#search_input).on("change", search);
+    $(#file_list).onValueChanged = function(){
+        view.load_tags(this.value)
+    }
 }
+
+function append_tag(tag_name){
+    var element = new Element("option");
+    element.text = tag_name;
+    $(div#list > select#tag_list).append(element);
+}
+
 
 function append_file(file_name){
     var element = new Element("option")
@@ -9,7 +19,8 @@ function append_file(file_name){
     element << event dblclick $(option){
         view.open(file_name)
     }
-    $(div#list > select).append(element);
+
+    $(div#list > select#file_list).append(element);
 }
 
 function search(){
@@ -17,5 +28,9 @@ function search(){
 }
 
 function clear_files(){
-    $(div#list > select).clear()
+    $(div#list > select#file_list).clear()
+}
+
+function clear_tags(){
+    $(div#list > select#tag_list).clear()
 }
