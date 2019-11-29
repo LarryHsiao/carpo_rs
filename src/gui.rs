@@ -7,8 +7,8 @@ use sciter::window::Options::DebugMode;
 use sciter::{Element, Value};
 
 use crate::arch::{Action, Source};
-use crate::tags::{AllCFiles, FileTags, CFileByName};
 use crate::tags::FileSearching;
+use crate::tags::{AllCFiles, CFileByName, FileTags};
 use rusqlite::Connection;
 use std::collections::HashSet;
 use std::path::Path;
@@ -53,8 +53,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             fs_source: self.ui.fs_source,
         }
-            .value()
-            .unwrap();
+        .value()
+        .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
@@ -68,8 +68,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             file_source: self.ui.fs_source,
         }
-            .value()
-            .unwrap();
+        .value()
+        .unwrap();
         for (key, file) in files {
             root.call_function("append_file", &make_args!(key));
         }
@@ -87,8 +87,12 @@ impl Events<'_> {
             file: &CFileByName {
                 conn: self.ui.conn,
                 name: file_name.as_str(),
-            }.value().unwrap(),
-        }.value().unwrap();
+            }
+            .value()
+            .unwrap(),
+        }
+        .value()
+        .unwrap();
         for (key, tag) in tags {
             root.call_function("append_tag", &make_args!(key));
         }
