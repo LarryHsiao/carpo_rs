@@ -6,17 +6,22 @@
     <link rel=stylesheet type="text/css" href="stylesheet.css">
 </head>
 <style>
-    div#list > select {
+    input {
+        width: 500px;
+    }
+
+    select {
         width: 500px;
         height: 500px;
     }
 </style>
 <script type="text/tiscript" src="index.tis"></script>
 <body>
-<div>
+<div id="files">
     <input id="search_input" type="text">
+    <input id="tag_input" type="text">
 </div>
-<div id="list">
+<div id="tags">
     <select id="file_list" type="select"></select>
     <select id="tag_list" type="select"></select>
 </div>

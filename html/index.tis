@@ -9,7 +9,7 @@ function self.ready(){
 function append_tag(tag_name){
     var element = new Element("option");
     element.text = tag_name;
-    $(div#list > select#tag_list).append(element);
+    $(#tag_list).append(element);
 }
 
 
@@ -20,7 +20,7 @@ function append_file(file_name){
         view.open(file_name)
     }
 
-    $(div#list > select#file_list).append(element);
+    $(#file_list).append(element);
 }
 
 function search(){
@@ -28,9 +28,9 @@ function search(){
 }
 
 function clear_files(){
-    $(div#list > select#file_list).clear()
+    $(#file_list).clear()
 }
 
 function clear_tags(){
-    $(div#list > select#tag_list).clear()
+    $(#tag_list).clear()
 }
