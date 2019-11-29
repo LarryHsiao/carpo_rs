@@ -5,12 +5,13 @@ function self.ready(){
         view.load_tags(this.value)
     };
     $(#tag_input).on("keyup", function(event){
-        if(event.keyCode == 65293){
+        if(event.keyCode == 65293 || event.keyCode == 13){
             event.preventDefault();
             view.attach_tag(
                 $(#file_list).$(option:current).value,
                 $(#tag_input).text
             )
+            this.text = "";
         }
     });
 }
