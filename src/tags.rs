@@ -268,7 +268,8 @@ impl Action for AttachTagAction<'_> {
             // language=SQLite
             r#"
             INSERT INTO files_tags(file_id, tag_id)
-            VALUES ((?1), (?2));
+            VALUES ((?1), (?2))
+            ON CONFLICT DO NOTHING;
             "#,
             params![self.file.id, self.tag.id],
         )?;
