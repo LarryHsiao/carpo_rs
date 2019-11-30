@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::error::Error;
 use std::fs;
-use std::path::{Path, PathBuf, MAIN_SEPARATOR};
+use std::path::{PathBuf, MAIN_SEPARATOR};
 
 use crate::arch::Source;
 

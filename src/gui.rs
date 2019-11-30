@@ -4,13 +4,12 @@ use sciter::dispatch_script_call;
 use sciter::make_args;
 use sciter::types::HWINDOW;
 use sciter::window::Options::DebugMode;
-use sciter::{Element, Value};
+use sciter::Element;
 
 use crate::arch::{Action, Source};
 use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags};
 use crate::tags::{AttachTagAction, FileSearching, TagByName};
 use rusqlite::Connection;
-use sciter::utf::u2sn;
 use std::collections::HashSet;
 use std::path::Path;
 
@@ -26,7 +25,9 @@ impl Action for UI<'_> {
         let mut frame = sciter::WindowBuilder::main_window()
             .with_size((1280, 720))
             .create();
-        frame.set_options(DebugMode(cfg!(debug_assertions)));
+        frame
+            .set_options(DebugMode(cfg!(debug_assertions)))
+            .unwrap();
         let mut path = std::env::current_dir()?;
         path.push("html");
         path.push("index.html");
@@ -56,14 +57,14 @@ impl Events<'_> {
         }
         .value()
         .unwrap();
-        for (key, file) in files {
-            root.call_function("append_file", &make_args!(key));
+        for (key, _) in files {
+            root.call_function("append_file", &make_args!(key)).unwrap();
         }
     }
 
     fn search(&self, string: String) {
         let root = Element::from_window(self.hwnd).unwrap();
-        root.call_function("clear_files", &[]);
+        root.call_function("clear_files", &[]).unwrap();
         let files = FileSearching {
             keyword: string.as_str(),
             conn: self.ui.conn,
@@ -71,8 +72,8 @@ impl Events<'_> {
         }
         .value()
         .unwrap();
-        for (key, file) in files {
-            root.call_function("append_file", &make_args!(key));
+        for (key, _) in files {
+            root.call_function("append_file", &make_args!(key)).unwrap();
         }
     }
 
@@ -82,7 +83,7 @@ impl Events<'_> {
 
     fn load_tags(&self, file_name: String) {
         let root = Element::from_window(self.hwnd).unwrap();
-        root.call_function("clear_tags", &[]);
+        root.call_function("clear_tags", &[]).unwrap();
         let tags = FileTags {
             conn: self.ui.conn,
             file: &CFileByName {
@@ -94,8 +95,8 @@ impl Events<'_> {
         }
         .value()
         .unwrap();
-        for (key, tag) in tags {
-            root.call_function("append_tag", &make_args!(key));
+        for (key, _) in tags {
+            root.call_function("append_tag", &make_args!(key)).unwrap();
         }
     }
 

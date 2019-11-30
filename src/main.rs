@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate sciter;
 extern crate open;
 
 use std::path::{Path, PathBuf};
@@ -149,7 +147,8 @@ fn main() {
                 fs_source: &AllFiles { root: pwd.clone() },
                 pwd: pwd_string.clone(),
             }
-            .fire();
+            .fire()
+            .unwrap();
         }
     }
 
