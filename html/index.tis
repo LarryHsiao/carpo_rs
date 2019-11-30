@@ -19,6 +19,21 @@ function self.ready(){
 function append_tag(tag_name){
     var element = new Element("option");
     element.text = tag_name;
+    element.onControlEvent = function(event) {
+        var type = event.type;
+        if(type == Event.MENU_ITEM_CLICK) {
+            switch(event.target) {
+                case $(#tag_delete) :
+                    view.detach_tag(
+                        $(#file_list).$(option:current).value,
+                        event.owner.value
+                    )
+                    break;
+                default:
+                    throw 'Item not recognized.';
+            }
+        }
+    }
     $(#tag_list).append(element);
 }
 

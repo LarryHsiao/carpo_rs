@@ -56,6 +56,12 @@ enum TagControl {
         /// Tag name we want to do the attach.
         tag_name: String,
     },
+    Detach {
+        /// File name we want the Tag detach to.
+        file_name: String,
+        /// Tag name we want to do the detach.
+        tag_name: String,
+    },
 }
 
 /// Main function of Carpo
@@ -182,6 +188,30 @@ fn main() {
                         name: file_name.as_str(),
                     };
                     let attach_action = AttachTagAction {
+                        file: &file.value().unwrap(),
+                        tag: &tag.value().unwrap(),
+                        conn: &conn,
+                    };
+                    attach_action.fire().unwrap();
+                }
+                TagControl::Detach {
+                    file_name,
+                    tag_name,
+                } => {
+                    let all_files = AllCFiles {
+                        fs_source: &AllFiles { root: root },
+                        conn: &conn,
+                    };
+                    all_files.value().unwrap(); // to build the file table in db.
+                    let tag = TagByName {
+                        conn: &conn,
+                        name: tag_name.as_str(),
+                    };
+                    let file = CFileByName {
+                        conn: &conn,
+                        name: file_name.as_str(),
+                    };
+                    let attach_action = DetachTagAction {
                         file: &file.value().unwrap(),
                         tag: &tag.value().unwrap(),
                         conn: &conn,

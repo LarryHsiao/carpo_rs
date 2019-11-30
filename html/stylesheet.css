@@ -173,6 +173,11 @@ pre, code, kbd, samp, var, output {
     font-size: 14.4px
 }
 
+menu{
+    width: 300px;
+    padding: 18px;
+}
+
 pre {
     border-left: 1.8px solid #59c072;
     line-height: 25.2px;

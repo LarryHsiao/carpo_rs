@@ -277,6 +277,27 @@ impl Action for AttachTagAction<'_> {
     }
 }
 
+/// Action to do the link an Tag to File.
+pub struct DetachTagAction<'a> {
+    pub file: &'a CFile,
+    pub tag: &'a Tag,
+    pub conn: &'a Connection,
+}
+
+impl Action for DetachTagAction<'_> {
+    fn fire(&self) -> Result<(), Box<dyn Error>> {
+        self.conn.execute(
+            // language=SQLite
+            r#"
+            DELETE FROM files_tags
+            WHERE file_id=?1 AND tag_id=?2;
+            "#,
+            params![self.file.id, self.tag.id],
+        )?;
+        Ok(())
+    }
+}
+
 /// CFile by name
 pub struct CFileByName<'a> {
     pub conn: &'a Connection,

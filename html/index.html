@@ -14,6 +14,10 @@
         width: 500px;
         height: 500px;
     }
+
+    #tag_list > option {
+        context-menu: selector(menu#tag_menu)
+    }
 </style>
 <script type="text/tiscript" src="index.tis"></script>
 <body>
@@ -24,6 +28,11 @@
 <div id="tags">
     <select id="file_list" type="select"></select>
     <select id="tag_list" type="select"></select>
+
+    <menu class=context id="tag_menu">
+        <caption>#foo menu for .bar elements</caption>
+        <li id="tag_delete">Delete</li>
+    </menu>
 </div>
 </body>
 </html>
