@@ -302,7 +302,6 @@ fn file_searching_found() {
 /// Insert input/output
 #[test]
 fn search_tags() {
-    let tag_name = "Sample Name";
     let conn = Connection::open_in_memory().unwrap();
     TagDb { conn: &conn }.fire().unwrap();
     for i in 0..3 {

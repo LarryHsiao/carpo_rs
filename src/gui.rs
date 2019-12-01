@@ -11,7 +11,6 @@ use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName}
 use crate::tags::{AttachTagAction, FileSearching, TagByName};
 use rusqlite::Connection;
 use std::collections::HashSet;
-use std::env::var;
 use std::path::Path;
 
 /// The terminal UI

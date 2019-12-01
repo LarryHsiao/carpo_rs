@@ -15,11 +15,7 @@ function self.ready(){
         }
     });
     $(#tag_input_widget).setCandidates(function(keyword) {
-        var tags = JSON.parse(view.search_tags(keyword));
-        for (var tag in tags) {
-           stdout.println("result "+tag)
-        }
-        return tags;
+        return JSON.parse(view.search_tags(keyword));
     })
 }
 
