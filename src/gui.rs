@@ -7,11 +7,12 @@ use sciter::window::Options::DebugMode;
 use sciter::Element;
 
 use crate::arch::{Action, Source};
-use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags};
+use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName};
 use crate::tags::{AttachTagAction, FileSearching, TagByName};
 use rusqlite::Connection;
 use std::collections::HashSet;
 use std::path::Path;
+use std::env::var;
 
 /// The terminal UI
 pub struct UI<'a> {
@@ -55,8 +56,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             fs_source: self.ui.fs_source,
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, _) in files {
             root.call_function("append_file", &make_args!(key)).unwrap();
         }
@@ -70,8 +71,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             file_source: self.ui.fs_source,
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, _) in files {
             root.call_function("append_file", &make_args!(key)).unwrap();
         }
@@ -90,11 +91,11 @@ impl Events<'_> {
                 conn: self.ui.conn,
                 name: file_name.as_str(),
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, _) in tags {
             root.call_function("append_tag", &make_args!(key)).unwrap();
         }
@@ -107,17 +108,17 @@ impl Events<'_> {
                 name: file_name.as_str(),
                 conn: self.ui.conn,
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
             tag: &TagByName {
                 conn: self.ui.conn,
                 name: tag_name.as_str(),
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
         }
-        .fire()
-        .unwrap();
+            .fire()
+            .unwrap();
         self.load_tags(file_name);
     }
 
@@ -128,18 +129,30 @@ impl Events<'_> {
                 name: file_name.as_str(),
                 conn: self.ui.conn,
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
             tag: &TagByName {
                 conn: self.ui.conn,
                 name: tag_name.as_str(),
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
         }
-        .fire()
-        .unwrap();
+            .fire()
+            .unwrap();
         self.load_tags(file_name);
+    }
+
+    fn search_tags(&self, tag_name: String) -> String {
+        let tags = TagsByName {
+            conn: self.ui.conn,
+            keyword: tag_name.as_str(),
+        }.value().unwrap();
+        let mut result: Vec<String> = Vec::new();
+        for (key,_) in tags {
+           result.insert(0, key)
+        }
+        serde_json::to_string(&result).unwrap()
     }
 }
 
@@ -151,5 +164,6 @@ impl sciter::EventHandler for Events<'_> {
         fn open(String);
         fn attach_tag(String, String);
         fn detach_tag(String, String);
+        fn search_tags(String);
     }
 }

@@ -4,10 +4,7 @@ use rusqlite::Connection;
 
 use carpo::arch::{Action, Source};
 use carpo::files::AllFiles;
-use carpo::tags::{
-    AllCFiles, AllTags, AttachTagAction, CFileByName, CFilesByTagName, FileSearching, FileTags,
-    NewTag, TagByName, TagDb, TagDeleteByName,
-};
+use carpo::tags::*;
 
 /// Insert input/output
 #[test]
@@ -300,4 +297,24 @@ fn file_searching_found() {
     };
     let result = result_r.value().unwrap();
     assert_eq!(result.len(), 1)
+}
+
+/// Insert input/output
+#[test]
+fn search_tags() {
+    let tag_name = "Sample Name";
+    let conn = Connection::open_in_memory().unwrap();
+    TagDb { conn: &conn }.fire().unwrap();
+    for i in 0..3 {
+        let action = NewTag {
+            conn: &conn,
+            name: &format!("Sample Name{}", i),
+        };
+        action.fire().unwrap();
+    }
+    let tags = TagsByName {
+        conn: &conn,
+        keyword: "Sample"
+    }.value().unwrap();
+    assert_eq!(tags.len(), 3);
 }

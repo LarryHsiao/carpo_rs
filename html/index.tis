@@ -14,6 +14,13 @@ function self.ready(){
             this.text = "";
         }
     });
+    $(#tag_input_widget).setCandidates(function(keyword) {
+        var tags = JSON.parse(view.search_tags(keyword));
+        for (var tag in tags) {
+           stdout.println("result "+tag)
+        }
+        return tags;
+    })
 }
 
 function append_tag(tag_name){

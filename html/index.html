@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <title>This is title</title>
     <link rel=stylesheet type="text/css" href="stylesheet.css">
+    <link rel=stylesheet type="text/css" href="auto_complete.css">
 </head>
 <style>
-    input {
+    #search_input {
+        width: 500px;
+    }
+
+    #tag_input {
         width: 500px;
     }
 
@@ -18,19 +23,27 @@
     #tag_list > option {
         context-menu: selector(menu#tag_menu)
     }
+
+    widget[type="auto-complete"]{
+        width: 500px;
+    }
 </style>
 <script type="text/tiscript" src="index.tis"></script>
+<script type="text/tiscript" src="auto_complete.tis"></script>
 <body>
-<div id="files">
+<span id="files">
     <input id="search_input" type="text">
-    <input id="tag_input" type="text">
-</div>
+    <widget id="tag_input_widget" |auto-complete>
+    <input id="tag_input" |text/>
+    <popup></popup>
+    </widget>
+</span>
 <div id="tags">
     <select id="file_list" type="select"></select>
     <select id="tag_list" type="select"></select>
 
     <menu class=context id="tag_menu">
-        <caption>#foo menu for .bar elements</caption>
+        <caption>Tag</caption>
         <li id="tag_delete">Delete</li>
     </menu>
 </div>

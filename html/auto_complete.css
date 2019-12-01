@@ -1,0 +1,24 @@
+widget[type="auto-complete"] {
+    prototype:AutoComplete;
+}
+widget[type="auto-complete"] > input{
+    margin:0;
+    display:block;
+}
+
+widget[type="auto-complete"] > popup {
+    width:*;
+    height:min-content;
+    display:none;
+    background:infobackground;
+    border:1px solid black;
+}
+
+widget[type="auto-complete"] > popup > text {
+    behavior:clickable;  // generates click events
+}
+
+widget[type="auto-complete"] > popup > text:hover {
+    background:highlight;
+    color:highlighttext;
+}

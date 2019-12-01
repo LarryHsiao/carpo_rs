@@ -1,0 +1,42 @@
+class AutoComplete : Element {
+        function attached() {
+          this.input = this.$(input);
+          this.candidates = this.$(popup);
+        }
+
+        event change $(input) { this.onTextChange(); }
+        event change $(mouseup) { this.input.state.focus = true; }
+        event click  $(popup>text) (evt,elText) { this.setText(elText.text, elText.attributes["data-id"]) }
+
+        function onTextChange()
+        {
+          var text = this.input.value;
+          if( text )
+          {
+            var caretPos = this.input.selectionStart();
+            this.input.value = text = text.toUpperCase();
+            this.input.setSelection(caretPos,caretPos);
+            var list = this.candidate_source(text);
+            this.candidates.clear();
+            for(var li in list)
+              this.candidates.$append(<text>{li}</text>);
+            this.popup( this.candidates , (8 << 16) | 2);
+            this.input.state.focus = true;
+          }
+          else {
+            this.candidates.state.popup = false;
+          }
+        }
+
+
+        function setText(txt,id) {
+          this.candidates.state.popup = false;
+          this.input.value = txt;
+          this.input.setSelection(0,txt.length);
+          this.input.state.focus = true;
+        }
+
+        function setCandidates(candidate){
+            this.candidate_source = candidate
+        }
+      }

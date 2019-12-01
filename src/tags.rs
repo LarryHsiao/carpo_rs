@@ -119,7 +119,7 @@ impl Source<Tag> for TagByName<'_> {
             conn: self.conn,
             name: self.name,
         }
-        .fire()?;
+            .fire()?;
 
         Ok(Tag {
             id: self.conn.last_insert_rowid(),
@@ -394,6 +394,36 @@ impl Source<HashMap<String, CFile>> for FileSearching<'_> {
             if files.contains(&db_file.name) {
                 result.insert(db_file.name.clone(), db_file);
             }
+        }
+        return Ok(result);
+    }
+}
+
+pub struct TagsByName<'a> {
+    pub keyword: &'a str,
+    pub conn: &'a Connection,
+}
+
+impl Source<HashMap<String, Tag>> for TagsByName<'_> {
+    fn value(&self) -> Result<HashMap<String, Tag, RandomState>, Box<dyn Error>> {
+        let mut result: HashMap<String, Tag> = HashMap::new();
+        let mut stmt = self.conn.prepare(
+            // language=SQLite
+            r#"
+                SELECT * FROM tags
+                WHERE name LIKE (?1);
+            "#,
+        )?;
+        let keyword = format!("%{}%", self.keyword);
+        let rows = stmt.query_map(params![keyword], |row| {
+            Ok(Tag {
+                id: row.get(0)?,
+                name: row.get(1)?,
+            })
+        })?;
+        for row in rows {
+            let row_res = row?;
+            result.insert(row_res.name.to_string(), row_res);
         }
         return Ok(result);
     }
