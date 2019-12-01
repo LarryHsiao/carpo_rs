@@ -314,7 +314,9 @@ fn search_tags() {
     }
     let tags = TagsByName {
         conn: &conn,
-        keyword: "Sample"
-    }.value().unwrap();
+        keyword: "Sample",
+    }
+    .value()
+    .unwrap();
     assert_eq!(tags.len(), 3);
 }

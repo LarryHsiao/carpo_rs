@@ -119,7 +119,7 @@ impl Source<Tag> for TagByName<'_> {
             conn: self.conn,
             name: self.name,
         }
-            .fire()?;
+        .fire()?;
 
         Ok(Tag {
             id: self.conn.last_insert_rowid(),
