@@ -1,17 +1,17 @@
+use std::collections::HashSet;
 use std::error::Error;
+use std::path::Path;
 
+use rusqlite::Connection;
 use sciter::dispatch_script_call;
+use sciter::Element;
 use sciter::make_args;
 use sciter::types::HWINDOW;
 use sciter::window::Options::DebugMode;
-use sciter::Element;
 
 use crate::arch::{Action, Source};
 use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName};
 use crate::tags::{AttachTagAction, FileSearching, TagByName};
-use rusqlite::Connection;
-use std::collections::HashSet;
-use std::path::Path;
 
 /// The terminal UI
 pub struct UI<'a> {
@@ -28,15 +28,12 @@ impl Action for UI<'_> {
         frame
             .set_options(DebugMode(cfg!(debug_assertions)))
             .unwrap();
-        let mut path = std::env::current_dir()?;
-        path.push("html");
-        path.push("index.html");
         frame.event_handler(Events {
             hwnd: frame.get_hwnd(),
             ui: self,
             pwd: self.pwd.clone(),
         });
-        frame.load_file(format!("file://{}", path.to_str().unwrap()).as_str());
+        frame.load_file("file://html/index.html");
         frame.run_app();
         Ok(())
     }

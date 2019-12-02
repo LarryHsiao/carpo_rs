@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate rust_embed;
 extern crate open;
 
 use std::path::{Path, PathBuf};
@@ -63,10 +61,6 @@ enum TagControl {
         tag_name: String,
     },
 }
-
-#[derive(RustEmbed)]
-#[folder = "html/"]
-struct Asset;
 
 /// Main function of Carpo
 fn main() {
