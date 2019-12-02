@@ -21,27 +21,27 @@
     }
 
     #tag_list > option {
-        context-menu: selector(menu#tag_menu)
+        context-menu: selector(menu #tag_menu)
     }
 
-    widget[type="auto-complete"]{
+    widget[type="auto-complete"] {
         width: 500px;
     }
 </style>
 <script type="text/tiscript" src="index.tis"></script>
 <script type="text/tiscript" src="auto_complete.tis"></script>
 <body>
-<span id="files">
-    <input id="search_input" type="text">
+<div id="files" class="split left">
+    <div><input id="search_input" type="text"></div>
+    <div><select id="file_list" type="select"></select></div>
+</div>
+<div id="file_info" class="split right">
+    <textarea readonly id="file_name" style="overflow: hidden; min-height: 0;" >_</textarea>
     <widget id="tag_input_widget" |auto-complete>
-    <input id="tag_input" |text/>
-    <popup></popup>
+        <input id="tag_input" |text/>
+        <popup></popup>
     </widget>
-</span>
-<div id="tags">
-    <select id="file_list" type="select"></select>
     <select id="tag_list" type="select"></select>
-
     <menu class=context id="tag_menu">
         <caption>Tag</caption>
         <li id="tag_delete">Delete</li>

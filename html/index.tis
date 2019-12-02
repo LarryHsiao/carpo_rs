@@ -3,6 +3,7 @@ function self.ready(){
     $(#search_input).on("change", search);
     $(#file_list).onValueChanged = function(){
         view.load_tags(this.value)
+        $(#file_name).text = this.value
     };
     $(#tag_input).on("keyup", function(event){
         if(event.keyCode == 65293 || event.keyCode == 13){

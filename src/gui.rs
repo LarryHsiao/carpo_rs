@@ -35,8 +35,16 @@ impl Action for UI<'_> {
             ui: self,
             pwd: self.pwd.clone(),
         });
-        let mut path = home_dir().unwrap();
-        path.push(".carpo");
+
+        let mut path = {
+            if cfg!(debug_assertions) {
+                std::env::current_dir()?
+            } else {
+                let mut path = home_dir().unwrap();
+                path.push(".carpo");
+                path
+            }
+        };
         path.push("html");
         path.push("index.html");
         frame.load_file(format!("file://{}", path.to_str().unwrap()).as_str());
@@ -58,15 +66,15 @@ impl Events<'_> {
             conn: self.ui.conn,
             fs_source: self.ui.fs_source,
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, _) in files {
             let image_uri = {
                 if (IsImage {
                     file_name: key.clone(),
                 }
-                .value()
-                .unwrap())
+                    .value()
+                    .unwrap())
                 {
                     let mut image_path = PathBuf::from(self.pwd.clone());
                     image_path.push(key.clone());
@@ -88,15 +96,15 @@ impl Events<'_> {
             conn: self.ui.conn,
             file_source: self.ui.fs_source,
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, _) in files {
             let image_uri = {
                 if (IsImage {
                     file_name: key.clone(),
                 }
-                .value()
-                .unwrap())
+                    .value()
+                    .unwrap())
                 {
                     let mut image_path = PathBuf::from(self.pwd.clone());
                     image_path.push(key.clone());
@@ -123,11 +131,11 @@ impl Events<'_> {
                 conn: self.ui.conn,
                 name: file_name.as_str(),
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         for (key, _) in tags {
             root.call_function("append_tag", &make_args!(key)).unwrap();
         }
@@ -140,17 +148,17 @@ impl Events<'_> {
                 name: file_name.as_str(),
                 conn: self.ui.conn,
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
             tag: &TagByName {
                 conn: self.ui.conn,
                 name: tag_name.as_str(),
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
         }
-        .fire()
-        .unwrap();
+            .fire()
+            .unwrap();
         self.load_tags(file_name);
     }
 
@@ -161,17 +169,17 @@ impl Events<'_> {
                 name: file_name.as_str(),
                 conn: self.ui.conn,
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
             tag: &TagByName {
                 conn: self.ui.conn,
                 name: tag_name.as_str(),
             }
-            .value()
-            .unwrap(),
+                .value()
+                .unwrap(),
         }
-        .fire()
-        .unwrap();
+            .fire()
+            .unwrap();
         self.load_tags(file_name);
     }
 
@@ -180,8 +188,8 @@ impl Events<'_> {
             conn: self.ui.conn,
             keyword: tag_name.as_str(),
         }
-        .value()
-        .unwrap();
+            .value()
+            .unwrap();
         let mut result: Vec<String> = Vec::new();
         for (key, _) in tags {
             result.insert(0, key)
