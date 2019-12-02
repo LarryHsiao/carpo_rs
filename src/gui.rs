@@ -1,17 +1,18 @@
 use std::collections::HashSet;
 use std::error::Error;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use rusqlite::Connection;
 use sciter::dispatch_script_call;
+use sciter::Element;
 use sciter::make_args;
 use sciter::types::HWINDOW;
 use sciter::window::Options::DebugMode;
-use sciter::Element;
 
 use crate::arch::{Action, Source};
 use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName};
 use crate::tags::{AttachTagAction, FileSearching, TagByName};
+use crate::util::IsImage;
 
 /// The terminal UI
 pub struct UI<'a> {
@@ -55,7 +56,17 @@ impl Events<'_> {
         .value()
         .unwrap();
         for (key, _) in files {
-            root.call_function("append_file", &make_args!(key)).unwrap();
+            let image_uri = {
+                if(IsImage{file_name: key.clone()}.value().unwrap()){
+                    let mut image_path = PathBuf::from(self.pwd.clone());
+                    image_path.push(key.clone());
+                    image_path.into_os_string().into_string().unwrap()
+                }else{
+                    "".to_string()
+                }
+            };
+            root.call_function("append_file", &make_args!(key, image_uri))
+                .unwrap();
         }
     }
 

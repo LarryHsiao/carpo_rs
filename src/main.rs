@@ -1,3 +1,4 @@
+extern crate mime;
 extern crate open;
 
 use std::path::{Path, PathBuf};
@@ -14,6 +15,7 @@ mod arch;
 mod files;
 mod gui;
 mod tags;
+mod util;
 
 #[derive(StructOpt)]
 enum Cli {

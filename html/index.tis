@@ -41,9 +41,12 @@ function append_tag(tag_name){
 }
 
 
-function append_file(file_name){
+function append_file(file_name, image_uri){
     var element = new Element("option")
     element.text = file_name
+    if (image_uri != ''){
+        element.$append(<img id="embed_img" src="{image_uri}">)
+    }
     element << event dblclick $(option){
         view.open(file_name)
     }

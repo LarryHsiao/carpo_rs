@@ -450,3 +450,7 @@ figure img {
     display: block
 }
 
+#embed_img {
+    height: 48px;
+    width: 48px;
+}
