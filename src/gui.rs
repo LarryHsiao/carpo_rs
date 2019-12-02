@@ -4,10 +4,10 @@ use std::path::Path;
 
 use rusqlite::Connection;
 use sciter::dispatch_script_call;
-use sciter::Element;
 use sciter::make_args;
 use sciter::types::HWINDOW;
 use sciter::window::Options::DebugMode;
+use sciter::Element;
 
 use crate::arch::{Action, Source};
 use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName};
