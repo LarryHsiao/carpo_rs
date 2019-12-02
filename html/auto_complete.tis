@@ -14,7 +14,6 @@ class AutoComplete : Element {
           if( text )
           {
             var caretPos = this.input.selectionStart();
-            this.input.value = text = text.toUpperCase();
             this.input.setSelection(caretPos,caretPos);
             var list = this.candidate_source(text);
             this.candidates.clear();
