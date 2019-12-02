@@ -4,10 +4,10 @@ use std::path::{Path, PathBuf};
 
 use rusqlite::Connection;
 use sciter::dispatch_script_call;
-use sciter::Element;
 use sciter::make_args;
 use sciter::types::HWINDOW;
 use sciter::window::Options::DebugMode;
+use sciter::Element;
 
 use crate::arch::{Action, Source};
 use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName};
@@ -57,11 +57,16 @@ impl Events<'_> {
         .unwrap();
         for (key, _) in files {
             let image_uri = {
-                if(IsImage{file_name: key.clone()}.value().unwrap()){
+                if (IsImage {
+                    file_name: key.clone(),
+                }
+                .value()
+                .unwrap())
+                {
                     let mut image_path = PathBuf::from(self.pwd.clone());
                     image_path.push(key.clone());
                     image_path.into_os_string().into_string().unwrap()
-                }else{
+                } else {
                     "".to_string()
                 }
             };

@@ -9,17 +9,15 @@ fn simple() {
     .value()
     .unwrap());
 
-
     assert!(IsImage {
         file_name: "image.jpg".to_string()
     }
-        .value()
-        .unwrap());
-
+    .value()
+    .unwrap());
 
     assert!(!IsImage {
         file_name: "file.whatever".to_string()
     }
-        .value()
-        .unwrap());
+    .value()
+    .unwrap());
 }
