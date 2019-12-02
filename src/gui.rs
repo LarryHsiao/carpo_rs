@@ -13,6 +13,7 @@ use crate::arch::{Action, Source};
 use crate::tags::{AllCFiles, CFileByName, DetachTagAction, FileTags, TagsByName};
 use crate::tags::{AttachTagAction, FileSearching, TagByName};
 use crate::util::IsImage;
+use dirs::home_dir;
 
 /// The terminal UI
 pub struct UI<'a> {
@@ -34,7 +35,11 @@ impl Action for UI<'_> {
             ui: self,
             pwd: self.pwd.clone(),
         });
-        frame.load_file("file://html/index.html");
+        let mut path = home_dir().unwrap();
+        path.push(".carpo");
+        path.push("html");
+        path.push("index.html");
+        frame.load_file(format!("file://{}", path.to_str().unwrap()).as_str());
         frame.run_app();
         Ok(())
     }

@@ -1,6 +1,6 @@
 [package]
 name = "carpo"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Larry Hsiao <larryhsiao@larryhsiao.com>"]
 edition = "2018"
 license = "MIT"

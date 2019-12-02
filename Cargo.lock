@@ -93,7 +93,7 @@ dependencies = [
 
 [[package]]
 name = "carpo"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "dirs 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "mime 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
