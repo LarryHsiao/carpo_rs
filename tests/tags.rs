@@ -61,7 +61,7 @@ fn by_name_success() {
     assert_eq!(tag.name, tag_name)
 }
 
-/// Searching by name panic when no tag founded.
+/// Searching by name returns new Tag if not found.
 #[test]
 fn by_name_not_exist() {
     let tag_name = "Sample Name";
@@ -74,8 +74,8 @@ fn by_name_not_exist() {
     let result = source.value();
 
     match result {
-        Err(_) => assert!(true),
-        _ => assert!(false),
+        Err(_) => assert!(false),
+        _ => assert!(true),
     }
 }
 
