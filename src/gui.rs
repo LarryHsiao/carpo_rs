@@ -91,7 +91,22 @@ impl Events<'_> {
         .value()
         .unwrap();
         for (key, _) in files {
-            root.call_function("append_file", &make_args!(key)).unwrap();
+            let image_uri = {
+                if (IsImage {
+                    file_name: key.clone(),
+                }
+                .value()
+                .unwrap())
+                {
+                    let mut image_path = PathBuf::from(self.pwd.clone());
+                    image_path.push(key.clone());
+                    image_path.into_os_string().into_string().unwrap()
+                } else {
+                    "".to_string()
+                }
+            };
+            root.call_function("append_file", &make_args!(key, image_uri))
+                .unwrap();
         }
     }
 
